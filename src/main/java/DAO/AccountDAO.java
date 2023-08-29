@@ -16,28 +16,26 @@ import java.sql.Statement;
 // The ConnectionUtil provided uses a singleton, and using a try-with-resources will cause issues in the tests.
 
 public class AccountDAO {
-    
+
     // Create JDBC connection object to connect to database
     Connection connection = ConnectionUtil.getConnection();
 
-    // Fetch an account from account table, identified by its username
-    public Account getAccountByUsername(String username) {
+    // Fetch a username from account table, identified by its username
+    public String findUsernameInDatabase(String username) {
         try {
-            String sql = "SELECT * FROM account WHERE username = ?";
+            String sql = "SELECT username FROM account WHERE username = ?";
 
             PreparedStatement ps = connection.prepareStatement(sql);
             ps.setString(1, username);
 
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
-                Account account = new Account(
-                    rs.getInt("account_id"), 
-                    rs.getString("username"), 
-                    rs.getString("password")
+                String foundUsername = new String(
+                    rs.getString("username")
                 );
-                return account;
+                return foundUsername;
             }
-        
+
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
@@ -45,9 +43,29 @@ public class AccountDAO {
         return null;
     }
 
-    // Fetch an account from account table, identified by its password
-    public Account getAccountByPassword(String password) {
-        return new Account(0, password, password);
+    // Fetch an account from account table, identified by its username and password
+    public Account getAccountByUsernameAndPassword(String username, String password) {
+        try {
+            String sql = "SELECT * FROM account WHERE username = ? AND password = ?";
+
+            PreparedStatement ps = connection.prepareStatement(sql);
+            ps.setString(1, username);
+            ps.setString(2, password);
+
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                Account account = new Account(
+                        rs.getInt("account_id"),
+                        rs.getString("username"),
+                        rs.getString("password"));
+                return account;
+            }
+
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+
+        return null;
     }
 
     // Insert a new account into account table
@@ -63,7 +81,7 @@ public class AccountDAO {
             ResultSet accountIdResultSet = ps.getGeneratedKeys();
             if (accountIdResultSet.next()) {
                 int generatedAccountId = (int) accountIdResultSet.getLong(1);
-                return new Account (generatedAccountId, account.username, account.password);
+                return new Account(generatedAccountId, account.username, account.password);
             }
 
         } catch (SQLException e) {

@@ -7,7 +7,7 @@ import DAO.AccountDAO;
 // You should refer to prior mini-project lab examples and course material for guidance.
 
 public class AccountService {
-    
+
     // Create account DAO object
     private AccountDAO accountDAO;
 
@@ -22,13 +22,25 @@ public class AccountService {
         // check for correct password length
         boolean passwordLength = account.password.length() >= 4;
         // check for pre-existing account name
-        boolean usernameNotTaken = accountDAO.getAccountByUsername(account.username) == null;
+        boolean usernameNotTaken = accountDAO.findUsernameInDatabase(account.username) == null;
 
         if (!usernameEmpty && passwordLength && usernameNotTaken) {
             return accountDAO.insertAccount(account);
         }
-        
+
         return null;
     }
+
+    // Get an account from a database that matches the username and password
+    public Account getAccount(String username, String password) {
+        Account fetchedAccount = accountDAO.getAccountByUsernameAndPassword(username, password);
+
+        if (fetchedAccount != null) {
+            return fetchedAccount;
+        }
+
+        return null;
+    }
+
 
 }

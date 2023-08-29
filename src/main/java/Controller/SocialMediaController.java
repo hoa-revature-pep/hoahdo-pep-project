@@ -46,6 +46,8 @@ public class SocialMediaController {
         // User Registration Endpoint
         app.post("/register", this::postAccountHandler);
 
+        // User Login Endpoint
+        app.post("/login", this::postLoginHandler);
 
 
 
@@ -75,4 +77,18 @@ public class SocialMediaController {
         }
     }
 
+    // User Login Handler
+    private void postLoginHandler(Context ctx) throws JsonProcessingException {
+        Account userAccount = mapper.readValue(ctx.body(), Account.class);
+        Account verifiedAccount = accountService.getAccount(userAccount.username, userAccount.password);
+
+        if (verifiedAccount != null) {
+            ctx.status(200);
+            ctx.json(verifiedAccount);
+        } else {
+            ctx.status(401);
+        }
+    }
+
+    //
 }
