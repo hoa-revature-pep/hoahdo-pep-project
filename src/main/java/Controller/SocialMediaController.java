@@ -19,7 +19,7 @@ import io.javalin.http.Context;
  */
 public class SocialMediaController {
 
-    // Create Account, Message service objects
+    // Create Account & Message service objects
     AccountService accountService;
     MessageService messageService;
 
@@ -49,7 +49,23 @@ public class SocialMediaController {
         // User Login Endpoint
         app.post("/login", this::postLoginHandler);
 
+        // Create New Message Endpoint
+        app.post("/messages", this::postNewMessage);
 
+        // Get All Messages Endpoint
+        app.get("messages", this::getAllMessages);
+
+        // Get Message By Id Endpoint
+        app.get("/messages/{message_id}", this::getMessageById);
+
+        // Delete Message By Id Endpoint
+        app.delete("/messages/{message_id}", this::deleteMessageById);
+
+        // Update Message By Id Endpoint
+        app.patch("/messages/{message+id}", this::updateMessageById);
+
+        // Get All Messages By Account Id Endpoint
+        app.get("/accounts/{account_id}/messages", this::getAllMessagesByAccountId);
 
         return app;
     }
@@ -64,6 +80,9 @@ public class SocialMediaController {
         context.json("sample text");
     }
 
+    /***********************************/
+    /********** USER HANDLERS **********/
+    /***********************************/
     // User Registration Handler
     private void postAccountHandler(Context ctx) throws JsonProcessingException {
         Account newAccount = mapper.readValue(ctx.body(), Account.class);
@@ -90,5 +109,24 @@ public class SocialMediaController {
         }
     }
 
-    //
+    /***********************************/
+    /******** MESSAGE HANDLERS *********/
+    /***********************************/
+    // Create New Message Handler
+    private void postNewMessage(Context ctx) {}
+
+    // Get All Messages Handler
+    private void getAllMessages(Context ctx) {}
+
+    // Get Message By Id Handler
+    private void getMessageById(Context ctx) {}
+
+    // Delete Message By Id Handler
+    private void deleteMessageById(Context ctx) {}
+
+    // Update Message By Id Handler
+    private void updateMessageById(Context ctx) {}
+
+    // Get All Messages By Account Id
+    private void getAllMessagesByAccountId(Context ctx) {}
 }
