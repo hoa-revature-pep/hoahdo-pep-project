@@ -7,7 +7,6 @@ import Service.MessageService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import java.util.List;
-import java.lang.Integer;
 
 import io.javalin.Javalin;
 import io.javalin.http.Context;
@@ -139,10 +138,10 @@ public class SocialMediaController {
     private void getMessageByIdHandler(Context ctx) {
         String messageIdString = ctx.pathParam("message_id");
         int messageId = Integer.parseInt(messageIdString);
-        Message foundMessageById = messageService.getMessageById(messageId);
+        Message messageFoundById = messageService.getMessageById(messageId);
 
-        if (foundMessageById != null) {
-            ctx.json(foundMessageById);
+        if (messageFoundById != null) {
+            ctx.json(messageFoundById);
         }
 
         ctx.status(200);
@@ -150,6 +149,16 @@ public class SocialMediaController {
 
     // Delete Message By Id Handler
     private void deleteMessageByIdHandler(Context ctx) {
+        String messageIdString = ctx.pathParam("message_id");
+        int messageId = Integer.parseInt(messageIdString);
+        Message messageDeletedById = messageService.deleteMessageById(messageId);
+
+        if (messageDeletedById != null) {
+            ctx.status(200);
+            ctx.json(messageDeletedById);
+        } else {
+            ctx.status(200);
+        }
     }
 
     // Update Message By Id Handler
@@ -161,10 +170,3 @@ public class SocialMediaController {
     }
 
 }
-
-// app.get("/firstname/{first}", ctx -> {
-            
-//     //write code here
-//     String firstVariable = ctx.pathParam("first");
-//     ctx.result(firstVariable);
-// });

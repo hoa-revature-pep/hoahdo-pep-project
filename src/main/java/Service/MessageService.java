@@ -37,5 +37,15 @@ public class MessageService {
         return messageDAO.getMessageById(id);
     }
 
-    
+    // Delete message from database by its id
+    public Message deleteMessageById(int id) {
+        Message messageExists = messageDAO.getMessageById(id);
+        boolean messageDeleted = messageDAO.deleteMessageById(id);
+
+        if (messageDeleted) {
+            return messageExists;
+        }
+
+        return null;
+    }
 }
