@@ -136,4 +136,24 @@ public class MessageDAO {
         return false;
     }
 
+    // Update a message from message table by its message id
+    public boolean updateMessageById(int id, Message message) {
+        try {
+            String sql = "UPDATE message SET message_text = ? WHERE message_id = ?";
+
+            PreparedStatement ps = connection.prepareStatement(sql);
+            ps.setString(1, message.message_text);
+            ps.setInt(2, id);
+
+            int numberOfUpdatedRows = ps.executeUpdate();
+            if (numberOfUpdatedRows != 0) {
+                return true;
+            }
+
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+
+        return false;
+    }
 }

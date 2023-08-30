@@ -48,4 +48,19 @@ public class MessageService {
 
         return null;
     }
+
+    // Update a message from database by its id
+    public Message updateMessageById(int id, Message message) {
+        boolean messageExists = messageDAO.getMessageById(id) != null;
+        boolean newMessageTextEmpty = message.message_text.isEmpty();
+        boolean newMessageTextLength = message.message_text.length() < 255;
+        boolean messageUpdateSuccessful = messageDAO.updateMessageById(id, message);
+
+        if (messageExists && !newMessageTextEmpty && newMessageTextLength && messageUpdateSuccessful) {
+            return messageDAO.getMessageById(id);
+        }
+
+        return null;
+    }
+
 }

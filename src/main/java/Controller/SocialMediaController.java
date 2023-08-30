@@ -162,7 +162,19 @@ public class SocialMediaController {
     }
 
     // Update Message By Id Handler
-    private void updateMessageByIdHandler(Context ctx) {
+    private void updateMessageByIdHandler(Context ctx) throws JsonProcessingException {
+        String messageIdString = ctx.pathParam("message_id");
+        int messageId = Integer.parseInt(messageIdString);
+        Message newMessageText = mapper.readValue(ctx.body(), Message.class);
+        Message messageUpdatedById = messageService.updateMessageById(messageId, newMessageText);
+
+        System.out.println(messageUpdatedById);
+        if (messageUpdatedById != null) {
+            ctx.status(200);
+            ctx.json(messageUpdatedById);
+        } else {
+            ctx.status(400);
+        }
     }
 
     // Get All Messages By Account Id
