@@ -20,17 +20,17 @@ import io.javalin.http.Context;
  */
 public class SocialMediaController {
 
-    // Create Account & Message service objects
     AccountService accountService;
     MessageService messageService;
 
+    /**
+     * A no-args constructor used for creating a new SocialMediaController with
+     * new AccountService and MessageService objects.
+     */
     public SocialMediaController() {
         this.accountService = new AccountService();
         this.messageService = new MessageService();
     }
-
-    // Create Jackson ObjectMapper object
-    ObjectMapper mapper = new ObjectMapper();
 
     /**
      * In order for the test cases to work, you will need to write the endpoints in
@@ -45,28 +45,28 @@ public class SocialMediaController {
         app.get("example-endpoint", this::exampleHandler);
 
         // User Registration Endpoint
-        app.post("/register", this::postAccountHandler);
+        app.post("/register", this::createAccountHandler);
 
         // User Login Endpoint
-        app.post("/login", this::postLoginHandler);
+        app.post("/login", this::verifyLoginHandler);
 
         // Create New Message Endpoint
-        app.post("/messages", this::postNewMessageHandler);
+        app.post("/messages", this::createNewMessageHandler);
 
         // Get All Messages Endpoint
         app.get("messages", this::getAllMessagesHandler);
 
-        // Get Message By Id Endpoint
-        app.get("/messages/{message_id}", this::getMessageByIdHandler);
+        // Get One Message By Given Message ID Endpoint
+        app.get("/messages/{message_id}", this::getOneMessageByIDHandler);
 
-        // Delete Message By Id Endpoint
-        app.delete("/messages/{message_id}", this::deleteMessageByIdHandler);
+        // Delete Message By Given Message ID Endpoint
+        app.delete("/messages/{message_id}", this::deleteMessageByIDHandler);
 
-        // Update Message By Id Endpoint
-        app.patch("/messages/{message_id}", this::updateMessageByIdHandler);
+        // Update Message By Given Message ID Endpoint
+        app.patch("/messages/{message_id}", this::updateMessageByIDHandler);
 
-        // Get All Messages By Account Id Endpoint
-        app.get("/accounts/{account_id}/messages", this::getAllMessagesByAccountIdHandler);
+        // Get All Messages By User Given Account ID Endpoint
+        app.get("/accounts/{account_id}/messages", this::getAllMessagesByAccountIDHandler);
 
         return app;
     }
@@ -81,12 +81,25 @@ public class SocialMediaController {
         context.json("sample text");
     }
 
-    /***********************************/
-    /********** USER HANDLERS **********/
-    /***********************************/
+    /**
+     * Instantiating a new Jackson ObjectMapper object for use in handler
+     * methods to convert JSON into desired target object.
+     */
+    ObjectMapper mapper = new ObjectMapper();
 
-    // User Registration Handler
-    private void postAccountHandler(Context ctx) throws JsonProcessingException {
+    /*******************************************/
+    /************** USER HANDLERS **************/
+    /*******************************************/
+
+    /**
+     * Handler method used to create a new user account.
+     * 
+     * @param ctx The Javalin Context object that contains request and response
+     *            information and functionality.
+     * @throws JsonProcessingException Thrown if there is an issue with converting
+     *                                 JSON into an object.
+     */
+    private void createAccountHandler(Context ctx) throws JsonProcessingException {
         Account newAccount = mapper.readValue(ctx.body(), Account.class);
         Account addedAccount = accountService.addAccount(newAccount);
 
@@ -98,8 +111,15 @@ public class SocialMediaController {
         }
     }
 
-    // User Login Handler
-    private void postLoginHandler(Context ctx) throws JsonProcessingException {
+    /**
+     * Handler method used to verify user login credentials.
+     * 
+     * @param ctx The Javalin Context object that contains request and response
+     *            information and functionality.
+     * @throws JsonProcessingException Thrown if there is an issue with converting
+     *                                 JSON into an object.
+     */
+    private void verifyLoginHandler(Context ctx) throws JsonProcessingException {
         Account userAccount = mapper.readValue(ctx.body(), Account.class);
         Account verifiedAccount = accountService.getAccount(userAccount.username, userAccount.password);
 
@@ -111,12 +131,19 @@ public class SocialMediaController {
         }
     }
 
-    /***********************************/
-    /******** MESSAGE HANDLERS *********/
-    /***********************************/
+    /*******************************************/
+    /************ MESSAGE HANDLERS *************/
+    /*******************************************/
 
-    // Create New Message Handler
-    private void postNewMessageHandler(Context ctx) throws JsonProcessingException {
+    /**
+     * Handler method used to create a new message.
+     * 
+     * @param ctx The Javalin Context object that contains request and response
+     *            information and functionality.
+     * @throws JsonProcessingException Thrown if there is an issue with converting
+     *                                 JSON into an object.
+     */
+    private void createNewMessageHandler(Context ctx) throws JsonProcessingException {
         Message newMessage = mapper.readValue(ctx.body(), Message.class);
         Message addedMessage = messageService.addMessage(newMessage);
 
@@ -128,14 +155,24 @@ public class SocialMediaController {
         }
     }
 
-    // Get All Messages Handler
+    /**
+     * Handler method used to fetch all messages.
+     * 
+     * @param ctx The Javalin Context object that contains request and response
+     *            information and functionality.
+     */
     private void getAllMessagesHandler(Context ctx) {
         List<Message> messages = messageService.getAllMessages();
         ctx.json(messages);
     }
 
-    // Get Message By Id Handler
-    private void getMessageByIdHandler(Context ctx) {
+    /**
+     * Handler method used to fetch a message by a message ID.
+     * 
+     * @param ctx The Javalin Context object that contains request and response
+     *            information and functionality.
+     */
+    private void getOneMessageByIDHandler(Context ctx) {
         String messageIdString = ctx.pathParam("message_id");
         int messageId = Integer.parseInt(messageIdString);
         Message messageFoundById = messageService.getMessageById(messageId);
@@ -147,8 +184,13 @@ public class SocialMediaController {
         ctx.status(200);
     }
 
-    // Delete Message By Id Handler
-    private void deleteMessageByIdHandler(Context ctx) {
+    /**
+     * Handler method used to delete a message by a message ID.
+     * 
+     * @param ctx The Javalin Context object that contains request and response
+     *            information and functionality.
+     */
+    private void deleteMessageByIDHandler(Context ctx) {
         String messageIdString = ctx.pathParam("message_id");
         int messageId = Integer.parseInt(messageIdString);
         Message messageDeletedById = messageService.deleteMessageById(messageId);
@@ -161,8 +203,15 @@ public class SocialMediaController {
         }
     }
 
-    // Update Message By Id Handler
-    private void updateMessageByIdHandler(Context ctx) throws JsonProcessingException {
+    /**
+     * Handler method used to update a message by a message ID.
+     * 
+     * @param ctx The Javalin Context object that contains request and response
+     *            information and functionality.
+     * @throws JsonProcessingException Thrown if there is an issue with converting
+     *                                 JSON into an object.
+     */
+    private void updateMessageByIDHandler(Context ctx) throws JsonProcessingException {
         String messageIdString = ctx.pathParam("message_id");
         int messageId = Integer.parseInt(messageIdString);
         Message newMessageText = mapper.readValue(ctx.body(), Message.class);
@@ -177,8 +226,13 @@ public class SocialMediaController {
         }
     }
 
-    // Get All Messages By Account Id
-    private void getAllMessagesByAccountIdHandler(Context ctx) {
+    /**
+     * Handler method used to fetch all messages by an account ID.
+     * 
+     * @param ctx The Javalin Context object that contains request and response
+     *            information and functionality.
+     */
+    private void getAllMessagesByAccountIDHandler(Context ctx) {
         String accountIdString = ctx.pathParam("account_id");
         int accountId = Integer.parseInt(accountIdString);
         List<Message> messages = messageService.getAllMessagesByAccountId(accountId);
