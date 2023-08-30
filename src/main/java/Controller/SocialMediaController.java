@@ -4,8 +4,9 @@ import Model.Account;
 import Model.Message;
 import Service.AccountService;
 import Service.MessageService;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import java.util.List;
 
 import io.javalin.Javalin;
 import io.javalin.http.Context;
@@ -50,22 +51,22 @@ public class SocialMediaController {
         app.post("/login", this::postLoginHandler);
 
         // Create New Message Endpoint
-        app.post("/messages", this::postNewMessage);
+        app.post("/messages", this::postNewMessageHandler);
 
         // Get All Messages Endpoint
-        app.get("messages", this::getAllMessages);
+        app.get("messages", this::getAllMessagesHandler);
 
         // Get Message By Id Endpoint
-        app.get("/messages/{message_id}", this::getMessageById);
+        app.get("/messages/{message_id}", this::getMessageByIdHandler);
 
         // Delete Message By Id Endpoint
-        app.delete("/messages/{message_id}", this::deleteMessageById);
+        app.delete("/messages/{message_id}", this::deleteMessageByIdHandler);
 
         // Update Message By Id Endpoint
-        app.patch("/messages/{message+id}", this::updateMessageById);
+        app.patch("/messages/{message+id}", this::updateMessageByIdHandler);
 
         // Get All Messages By Account Id Endpoint
-        app.get("/accounts/{account_id}/messages", this::getAllMessagesByAccountId);
+        app.get("/accounts/{account_id}/messages", this::getAllMessagesByAccountIdHandler);
 
         return app;
     }
@@ -115,7 +116,7 @@ public class SocialMediaController {
     /***********************************/
 
     // Create New Message Handler
-    private void postNewMessage(Context ctx) throws JsonProcessingException {
+    private void postNewMessageHandler(Context ctx) throws JsonProcessingException {
         Message newMessage = mapper.readValue(ctx.body(), Message.class);
         Message addedMessage = messageService.addMessage(newMessage);
 
@@ -128,23 +129,25 @@ public class SocialMediaController {
     }
 
     // Get All Messages Handler
-    private void getAllMessages(Context ctx) {
+    private void getAllMessagesHandler(Context ctx) {
+        List<Message> messages = messageService.getAllMessages();
+        ctx.json(messages);
     }
 
     // Get Message By Id Handler
-    private void getMessageById(Context ctx) {
+    private void getMessageByIdHandler(Context ctx) {
     }
 
     // Delete Message By Id Handler
-    private void deleteMessageById(Context ctx) {
+    private void deleteMessageByIdHandler(Context ctx) {
     }
 
     // Update Message By Id Handler
-    private void updateMessageById(Context ctx) {
+    private void updateMessageByIdHandler(Context ctx) {
     }
 
     // Get All Messages By Account Id
-    private void getAllMessagesByAccountId(Context ctx) {
+    private void getAllMessagesByAccountIdHandler(Context ctx) {
     }
 
 }

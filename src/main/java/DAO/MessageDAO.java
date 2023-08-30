@@ -9,6 +9,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+import java.util.List;
+import java.util.ArrayList;
+
 public class MessageDAO {
 
     // Create JDBC connection object to connect to database //
@@ -60,6 +63,32 @@ public class MessageDAO {
         }
 
         return -1;
+    }
+
+    // Fetch all messages from message table
+    public List<Message> getAllMessages() {
+        List<Message> messages = new ArrayList<>();
+
+        try {
+            String sql = "SELECT * FROM message";
+
+            PreparedStatement ps = connection.prepareStatement(sql);
+
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                Message message = new Message(
+                        rs.getInt("message_id"),
+                        rs.getInt("posted_by"),
+                        rs.getString("message_text"),
+                        rs.getLong("time_posted_epoch"));
+                messages.add(message);
+            }
+
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+
+        return messages;
     }
 
 }
