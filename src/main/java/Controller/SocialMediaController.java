@@ -7,6 +7,7 @@ import Service.MessageService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import java.util.List;
+import java.lang.Integer;
 
 import io.javalin.Javalin;
 import io.javalin.http.Context;
@@ -63,7 +64,7 @@ public class SocialMediaController {
         app.delete("/messages/{message_id}", this::deleteMessageByIdHandler);
 
         // Update Message By Id Endpoint
-        app.patch("/messages/{message+id}", this::updateMessageByIdHandler);
+        app.patch("/messages/{message_id}", this::updateMessageByIdHandler);
 
         // Get All Messages By Account Id Endpoint
         app.get("/accounts/{account_id}/messages", this::getAllMessagesByAccountIdHandler);
@@ -136,6 +137,15 @@ public class SocialMediaController {
 
     // Get Message By Id Handler
     private void getMessageByIdHandler(Context ctx) {
+        String messageIdString = ctx.pathParam("message_id");
+        int messageId = Integer.parseInt(messageIdString);
+        Message foundMessageById = messageService.getMessageById(messageId);
+
+        if (foundMessageById != null) {
+            ctx.json(foundMessageById);
+        }
+
+        ctx.status(200);
     }
 
     // Delete Message By Id Handler
@@ -151,3 +161,10 @@ public class SocialMediaController {
     }
 
 }
+
+// app.get("/firstname/{first}", ctx -> {
+            
+//     //write code here
+//     String firstVariable = ctx.pathParam("first");
+//     ctx.result(firstVariable);
+// });
