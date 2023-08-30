@@ -179,6 +179,12 @@ public class SocialMediaController {
 
     // Get All Messages By Account Id
     private void getAllMessagesByAccountIdHandler(Context ctx) {
+        String accountIdString = ctx.pathParam("account_id");
+        int accountId = Integer.parseInt(accountIdString);
+        List<Message> messages = messageService.getAllMessagesByAccountId(accountId);
+
+        ctx.status(200);
+        ctx.json(messages);
     }
 
 }

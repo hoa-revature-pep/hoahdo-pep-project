@@ -31,11 +31,12 @@ public class MessageDAO {
             ResultSet messageIdResultSet = ps.getGeneratedKeys();
             if (messageIdResultSet.next()) {
                 int generatedMessageId = (int) messageIdResultSet.getLong(1);
-                return new Message(
+                Message newlyAddedMessage = new Message(
                         generatedMessageId,
                         message.posted_by,
                         message.message_text,
                         message.time_posted_epoch);
+                return newlyAddedMessage;
             }
 
         } catch (SQLException e) {
@@ -155,5 +156,32 @@ public class MessageDAO {
         }
 
         return false;
+    }
+
+    // Get all messages from message table by account id
+    public List<Message> getAllMessagesByAccountId(int id) {
+        List<Message> messages = new ArrayList<Message>();
+
+        try {
+            String sql = "SELECT * FROM message WHERE posted_by = ?";
+
+            PreparedStatement ps = connection.prepareStatement(sql);
+            ps.setInt(1, id);
+
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                Message message = new Message(
+                        rs.getInt("message_id"),
+                        rs.getInt("posted_by"),
+                        rs.getString("message_text"),
+                        rs.getLong("time_posted_epoch"));
+                messages.add(message);
+            }
+
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+
+        return messages;
     }
 }

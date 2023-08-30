@@ -63,4 +63,8 @@ public class MessageService {
         return null;
     }
 
+    // Fecth all messages from database by account id
+    public List<Message> getAllMessagesByAccountId(int id) {
+        return messageDAO.getAllMessagesByAccountId(id);
+    }
 }
