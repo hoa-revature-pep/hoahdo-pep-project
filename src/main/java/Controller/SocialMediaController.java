@@ -83,6 +83,7 @@ public class SocialMediaController {
     /***********************************/
     /********** USER HANDLERS **********/
     /***********************************/
+
     // User Registration Handler
     private void postAccountHandler(Context ctx) throws JsonProcessingException {
         Account newAccount = mapper.readValue(ctx.body(), Account.class);
@@ -112,21 +113,38 @@ public class SocialMediaController {
     /***********************************/
     /******** MESSAGE HANDLERS *********/
     /***********************************/
+
     // Create New Message Handler
-    private void postNewMessage(Context ctx) {}
+    private void postNewMessage(Context ctx) throws JsonProcessingException {
+        Message newMessage = mapper.readValue(ctx.body(), Message.class);
+        Message addedMessage = messageService.addMessage(newMessage);
+
+        if (addedMessage != null) {
+            ctx.status(200);
+            ctx.json(addedMessage);
+        } else {
+            ctx.status(400);
+        }
+    }
 
     // Get All Messages Handler
-    private void getAllMessages(Context ctx) {}
+    private void getAllMessages(Context ctx) {
+    }
 
     // Get Message By Id Handler
-    private void getMessageById(Context ctx) {}
+    private void getMessageById(Context ctx) {
+    }
 
     // Delete Message By Id Handler
-    private void deleteMessageById(Context ctx) {}
+    private void deleteMessageById(Context ctx) {
+    }
 
     // Update Message By Id Handler
-    private void updateMessageById(Context ctx) {}
+    private void updateMessageById(Context ctx) {
+    }
 
     // Get All Messages By Account Id
-    private void getAllMessagesByAccountId(Context ctx) {}
+    private void getAllMessagesByAccountId(Context ctx) {
+    }
+
 }

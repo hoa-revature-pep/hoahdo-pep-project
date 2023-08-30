@@ -9,18 +9,12 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-// You will need to design and create your own DAO classes from scratch. 
-// You should refer to prior mini-project lab examples and course material for guidance.
-
-// Please refrain from using a 'try-with-resources' block when connecting to your database. 
-// The ConnectionUtil provided uses a singleton, and using a try-with-resources will cause issues in the tests.
-
 public class AccountDAO {
 
     // Create JDBC connection object to connect to database
     Connection connection = ConnectionUtil.getConnection();
 
-    // Fetch a username from account table, identified by its username
+    // Fetch a username from account table by its username
     public String findUsernameInDatabase(String username) {
         try {
             String sql = "SELECT username FROM account WHERE username = ?";
@@ -31,8 +25,7 @@ public class AccountDAO {
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
                 String foundUsername = new String(
-                    rs.getString("username")
-                );
+                        rs.getString("username"));
                 return foundUsername;
             }
 
@@ -43,7 +36,7 @@ public class AccountDAO {
         return null;
     }
 
-    // Fetch an account from account table, identified by its username and password
+    // Fetch an account from account table by its username and password
     public Account getAccountByUsernameAndPassword(String username, String password) {
         try {
             String sql = "SELECT * FROM account WHERE username = ? AND password = ?";

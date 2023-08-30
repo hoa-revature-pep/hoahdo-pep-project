@@ -1,17 +1,65 @@
 package DAO;
 
 import Util.ConnectionUtil;
+import Model.Message;
+
 import java.sql.Connection;
-
-// You will need to design and create your own DAO classes from scratch. 
-// You should refer to prior mini-project lab examples and course material for guidance.
-
-// Please refrain from using a 'try-with-resources' block when connecting to your database. 
-// The ConnectionUtil provided uses a singleton, and using a try-with-resources will cause issues in the tests.
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 
 public class MessageDAO {
-    
+
     // Create JDBC connection object to connect to database //
     Connection connection = ConnectionUtil.getConnection();
+
+    // Insert a new message into message table
+    public Message insertMessage(Message message) {
+        try {
+            String sql = "INSERT INTO message (posted_by, message_text, time_posted_epoch) VALUES (?,?,?)";
+
+            PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+            ps.setInt(1, message.posted_by);
+            ps.setString(2, message.message_text);
+            ps.setLong(3, message.time_posted_epoch);
+
+            ps.executeUpdate();
+            ResultSet messageIdResultSet = ps.getGeneratedKeys();
+            if (messageIdResultSet.next()) {
+                int generatedMessageId = (int) messageIdResultSet.getLong(1);
+                return new Message(
+                        generatedMessageId,
+                        message.posted_by,
+                        message.message_text,
+                        message.time_posted_epoch);
+            }
+
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+
+        return null;
+    }
+
+    // Fetch a posted_by from message table by its poster Id
+    public int getPosterId(int id) {
+        try {
+            String sql = "SELECT posted_by FROM message WHERE posted_by = ?";
+
+            PreparedStatement ps = connection.prepareStatement(sql);
+            ps.setInt(1, id);
+
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                int foundPosterId = rs.getInt("posted_by");
+                return foundPosterId;
+            }
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+
+        return -1;
+    }
 
 }
