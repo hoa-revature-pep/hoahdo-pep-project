@@ -11,15 +11,22 @@ import java.sql.Statement;
 
 public class AccountDAO {
 
-    // Create JDBC connection object to connect to database
-    Connection connection = ConnectionUtil.getConnection();
+    /**
+     * Instantiating a connection object to connect to the database.
+     */
+    Connection conn = ConnectionUtil.getConnection();
 
-    // Fetch a username from account table by its username
+    /**
+     * Fetch a username from the account table.
+     * 
+     * @param username The username of an account.
+     * @return The username found in the table.
+     */
     public String findUsernameInDatabase(String username) {
         try {
             String sql = "SELECT username FROM account WHERE username = ?";
 
-            PreparedStatement ps = connection.prepareStatement(sql);
+            PreparedStatement ps = conn.prepareStatement(sql);
             ps.setString(1, username);
 
             ResultSet rs = ps.executeQuery();
@@ -36,12 +43,18 @@ public class AccountDAO {
         return null;
     }
 
-    // Fetch an account from account table by its username and password
+    /**
+     * Fetch an account from the account table by its username and password.
+     * 
+     * @param username The username of an account.
+     * @param password The password of an account.
+     * @return The account object found in the table.
+     */
     public Account getAccountByUsernameAndPassword(String username, String password) {
         try {
             String sql = "SELECT * FROM account WHERE username = ? AND password = ?";
 
-            PreparedStatement ps = connection.prepareStatement(sql);
+            PreparedStatement ps = conn.prepareStatement(sql);
             ps.setString(1, username);
             ps.setString(2, password);
 
@@ -61,12 +74,17 @@ public class AccountDAO {
         return null;
     }
 
-    // Insert a new account into account table
+    /**
+     * Add an account to the account table.
+     * 
+     * @param account An Account object.
+     * @return The account object added to the table.
+     */
     public Account insertAccount(Account account) {
         try {
             String sql = "INSERT INTO account (username, password) VALUES (?,?)";
 
-            PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+            PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
             ps.setString(1, account.username);
             ps.setString(2, account.password);
 
