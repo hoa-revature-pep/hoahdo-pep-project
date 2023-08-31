@@ -20,6 +20,12 @@ import io.javalin.http.Context;
  */
 public class SocialMediaController {
 
+    /**
+     * Instantiating a new Jackson ObjectMapper object for use in handler
+     * methods to convert JSON into desired target object.
+     */
+    ObjectMapper mapper = new ObjectMapper();
+
     AccountService accountService;
     MessageService messageService;
 
@@ -60,7 +66,7 @@ public class SocialMediaController {
          * POST
          * Create New Message Endpoint
          */
-        app.post("/messages", this::createNewMessageHandler);
+        app.post("/messages", this::createMessageHandler);
 
         /**
          * GET
@@ -105,12 +111,6 @@ public class SocialMediaController {
         context.json("sample text");
     }
 
-    /**
-     * Instantiating a new Jackson ObjectMapper object for use in handler
-     * methods to convert JSON into desired target object.
-     */
-    ObjectMapper mapper = new ObjectMapper();
-
     /*******************************************/
     /************** USER HANDLERS **************/
     /*******************************************/
@@ -125,11 +125,11 @@ public class SocialMediaController {
      */
     private void createAccountHandler(Context ctx) throws JsonProcessingException {
         Account newAccount = mapper.readValue(ctx.body(), Account.class);
-        Account addedAccount = accountService.addAccount(newAccount);
+        Account newlyAddedAccount = accountService.addAccount(newAccount);
 
-        if (addedAccount != null) {
+        if (newlyAddedAccount != null) {
             ctx.status(200);
-            ctx.json(addedAccount);
+            ctx.json(newlyAddedAccount);
         } else {
             ctx.status(400);
         }
@@ -144,12 +144,12 @@ public class SocialMediaController {
      *                                 JSON into an object.
      */
     private void verifyLoginHandler(Context ctx) throws JsonProcessingException {
-        Account userAccount = mapper.readValue(ctx.body(), Account.class);
-        Account verifiedAccount = accountService.getAccount(userAccount);
+        Account userInfo = mapper.readValue(ctx.body(), Account.class);
+        Account verifiedUser = accountService.getAccount(userInfo);
 
-        if (verifiedAccount != null) {
+        if (verifiedUser != null) {
             ctx.status(200);
-            ctx.json(verifiedAccount);
+            ctx.json(verifiedUser);
         } else {
             ctx.status(401);
         }
@@ -167,13 +167,13 @@ public class SocialMediaController {
      * @throws JsonProcessingException Thrown if there is an issue with converting
      *                                 JSON into an object.
      */
-    private void createNewMessageHandler(Context ctx) throws JsonProcessingException {
+    private void createMessageHandler(Context ctx) throws JsonProcessingException {
         Message newMessage = mapper.readValue(ctx.body(), Message.class);
-        Message addedMessage = messageService.addMessage(newMessage);
+        Message newlyAddedMessage = messageService.addMessage(newMessage);
 
-        if (addedMessage != null) {
+        if (newlyAddedMessage != null) {
             ctx.status(200);
-            ctx.json(addedMessage);
+            ctx.json(newlyAddedMessage);
         } else {
             ctx.status(400);
         }
@@ -187,6 +187,8 @@ public class SocialMediaController {
      */
     private void getAllMessagesHandler(Context ctx) {
         List<Message> messages = messageService.getAllMessages();
+
+        ctx.status(200);
         ctx.json(messages);
     }
 
@@ -197,34 +199,28 @@ public class SocialMediaController {
      *            information and functionality.
      */
     private void getOneMessageByIDHandler(Context ctx) {
-        String messageIdString = ctx.pathParam("message_id");
-        int messageId = Integer.parseInt(messageIdString);
-        Message messageFoundById = messageService.getMessageById(messageId);
+        int messageID = Integer.parseInt(ctx.pathParam("message_id"));
+        Message messageFoundByID = messageService.getMessageById(messageID);
 
-        if (messageFoundById != null) {
-            ctx.json(messageFoundById);
+        if (messageFoundByID != null) {
+            ctx.json(messageFoundByID);
         }
 
         ctx.status(200);
     }
 
     /**
-     * Handler method used to delete a message by a message ID.
+     * Handler method used to fetch all messages by an account ID.
      * 
      * @param ctx The Javalin Context object that contains request and response
      *            information and functionality.
      */
-    private void deleteMessageByIDHandler(Context ctx) {
-        String messageIdString = ctx.pathParam("message_id");
-        int messageId = Integer.parseInt(messageIdString);
-        Message messageDeletedById = messageService.deleteMessageById(messageId);
+    private void getAllMessagesByAccountIDHandler(Context ctx) {
+        int accountID = Integer.parseInt(ctx.pathParam("account_id"));
+        List<Message> messages = messageService.getAllMessagesByAccountId(accountID);
 
-        if (messageDeletedById != null) {
-            ctx.status(200);
-            ctx.json(messageDeletedById);
-        } else {
-            ctx.status(200);
-        }
+        ctx.status(200);
+        ctx.json(messages);
     }
 
     /**
@@ -236,33 +232,33 @@ public class SocialMediaController {
      *                                 JSON into an object.
      */
     private void updateMessageByIDHandler(Context ctx) throws JsonProcessingException {
-        String messageIdString = ctx.pathParam("message_id");
-        int messageId = Integer.parseInt(messageIdString);
-        Message newMessageText = mapper.readValue(ctx.body(), Message.class);
-        Message messageUpdatedById = messageService.updateMessageById(messageId, newMessageText);
+        int messageID = Integer.parseInt(ctx.pathParam("message_id"));
+        Message messageUpdate = mapper.readValue(ctx.body(), Message.class);
+        Message messageUpdatedByID = messageService.updateMessageById(messageID, messageUpdate);
 
-        System.out.println(messageUpdatedById);
-        if (messageUpdatedById != null) {
+        if (messageUpdatedByID != null) {
             ctx.status(200);
-            ctx.json(messageUpdatedById);
+            ctx.json(messageUpdatedByID);
         } else {
             ctx.status(400);
         }
     }
 
     /**
-     * Handler method used to fetch all messages by an account ID.
+     * Handler method used to delete a message by a message ID.
      * 
      * @param ctx The Javalin Context object that contains request and response
      *            information and functionality.
      */
-    private void getAllMessagesByAccountIDHandler(Context ctx) {
-        String accountIdString = ctx.pathParam("account_id");
-        int accountId = Integer.parseInt(accountIdString);
-        List<Message> messages = messageService.getAllMessagesByAccountId(accountId);
+    private void deleteMessageByIDHandler(Context ctx) {
+        int messageID = Integer.parseInt(ctx.pathParam("message_id"));
+        Message messageDeletedByID = messageService.deleteMessageById(messageID);
+
+        if (messageDeletedByID != null) {
+            ctx.json(messageDeletedByID);
+        }
 
         ctx.status(200);
-        ctx.json(messages);
     }
 
 }
