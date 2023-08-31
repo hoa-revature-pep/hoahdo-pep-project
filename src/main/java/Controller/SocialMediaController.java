@@ -44,29 +44,53 @@ public class SocialMediaController {
         Javalin app = Javalin.create();
         app.get("example-endpoint", this::exampleHandler);
 
-        // User Registration Endpoint
+        /**
+         * POST
+         * User Registration Endpoint
+         */
         app.post("/register", this::createAccountHandler);
 
-        // User Login Endpoint
+        /**
+         * POST
+         * User Login Endpoint
+         */
         app.post("/login", this::verifyLoginHandler);
 
-        // Create New Message Endpoint
+        /**
+         * POST
+         * Create New Message Endpoint
+         */
         app.post("/messages", this::createNewMessageHandler);
 
-        // Get All Messages Endpoint
+        /**
+         * GET
+         * Get All Messages Endpoint
+         */
         app.get("messages", this::getAllMessagesHandler);
 
-        // Get One Message By Given Message ID Endpoint
+        /**
+         * GET
+         * Get One Message By Given Message ID Endpoint
+         */
         app.get("/messages/{message_id}", this::getOneMessageByIDHandler);
 
-        // Delete Message By Given Message ID Endpoint
-        app.delete("/messages/{message_id}", this::deleteMessageByIDHandler);
+        /**
+         * GET
+         * Get All Messages By User Given Account ID Endpoint
+         */
+        app.get("/accounts/{account_id}/messages", this::getAllMessagesByAccountIDHandler);
 
-        // Update Message By Given Message ID Endpoint
+        /**
+         * PATCH
+         * Update Message By Given Message ID Endpoint
+         */
         app.patch("/messages/{message_id}", this::updateMessageByIDHandler);
 
-        // Get All Messages By User Given Account ID Endpoint
-        app.get("/accounts/{account_id}/messages", this::getAllMessagesByAccountIDHandler);
+        /**
+         * DELETE
+         * Delete Message By Given Message ID Endpoint
+         */
+        app.delete("/messages/{message_id}", this::deleteMessageByIDHandler);
 
         return app;
     }
