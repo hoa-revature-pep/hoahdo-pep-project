@@ -234,7 +234,9 @@ public class SocialMediaController {
     private void updateMessageByIDHandler(Context ctx) throws JsonProcessingException {
         int messageID = Integer.parseInt(ctx.pathParam("message_id"));
         Message messageUpdate = mapper.readValue(ctx.body(), Message.class);
-        Message messageUpdatedByID = messageService.updateMessageByID(messageID, messageUpdate);
+        Message messageUpdatedByID = messageService.updateMessageByID(
+                messageID,
+                messageUpdate);
 
         if (messageUpdatedByID != null) {
             ctx.status(200);

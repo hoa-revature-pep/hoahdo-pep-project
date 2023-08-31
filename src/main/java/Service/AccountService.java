@@ -25,7 +25,9 @@ public class AccountService {
         boolean passwordLengthCorrect = account.password.length() >= 4;
         boolean usernameNotTaken = accountDAO.findUsername(account.username) == null;
 
-        if (usernameNotEmpty && passwordLengthCorrect && usernameNotTaken) {
+        if (usernameNotEmpty &&
+            passwordLengthCorrect &&
+            usernameNotTaken) {
             return accountDAO.insertAccount(account);
         }
 
@@ -40,7 +42,9 @@ public class AccountService {
      * @return The account object if it was found in the database.
      */
     public Account verifyAccount(Account account) {
-        Account verifiedAccount = accountDAO.findAccountByUserInfo(account.username, account.password);
+        Account verifiedAccount = accountDAO.findAccountByUserInfo(
+                account.username,
+                account.password);
 
         if (verifiedAccount != null) {
             return verifiedAccount;

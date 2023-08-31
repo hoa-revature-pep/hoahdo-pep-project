@@ -76,7 +76,10 @@ public class MessageService {
         boolean messageTextLengthCorrect = message.message_text.length() < 255;
         boolean messageUpdated = messageDAO.updateMessageByID(id, message);
 
-        if (messageExists && messageTextNotEmpty && messageTextLengthCorrect && messageUpdated) {
+        if (messageExists &&
+            messageTextNotEmpty &&
+            messageTextLengthCorrect &&
+            messageUpdated) {
             return messageDAO.findMessageByID(id);
         }
 
