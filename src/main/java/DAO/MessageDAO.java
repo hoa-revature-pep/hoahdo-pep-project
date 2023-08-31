@@ -35,15 +35,15 @@ public class MessageDAO {
             ps.setLong(3, message.time_posted_epoch);
 
             ps.executeUpdate();
-            ResultSet messageIdResultSet = ps.getGeneratedKeys();
-            if (messageIdResultSet.next()) {
-                int generatedMessageId = (int) messageIdResultSet.getLong(1);
-                Message newlyAddedMessage = new Message(
-                        generatedMessageId,
+            ResultSet rsMessageID = ps.getGeneratedKeys();
+            if (rsMessageID.next()) {
+                int generatedMessageID = (int) rsMessageID.getLong(1);
+                Message insertedMessage = new Message(
+                        generatedMessageID,
                         message.posted_by,
                         message.message_text,
                         message.time_posted_epoch);
-                return newlyAddedMessage;
+                return insertedMessage;
             }
 
         } catch (SQLException e) {
@@ -59,7 +59,7 @@ public class MessageDAO {
      * @param id The ID of the poster.
      * @return The ID of the poster found in the table.
      */
-    public int getPosterId(int id) {
+    public int findPosterID(int id) {
         try {
             String sql = "SELECT posted_by FROM message WHERE posted_by = ?";
 
@@ -68,9 +68,10 @@ public class MessageDAO {
 
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
-                int foundPosterId = rs.getInt("posted_by");
-                return foundPosterId;
+                int foundPosterID = rs.getInt("posted_by");
+                return foundPosterID;
             }
+
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
@@ -83,7 +84,7 @@ public class MessageDAO {
      * 
      * @return All messages from the table as a List Collection.
      */
-    public List<Message> getAllMessages() {
+    public List<Message> findAllMessages() {
         List<Message> messages = new ArrayList<>();
 
         try {
@@ -114,7 +115,7 @@ public class MessageDAO {
      * @param id The ID of the message.
      * @return The message object found in the table.
      */
-    public Message getMessageById(int id) {
+    public Message findMessageByID(int id) {
         try {
             String sql = "SELECT * FROM message WHERE message_id = ?";
 
@@ -123,12 +124,12 @@ public class MessageDAO {
 
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
-                Message message = new Message(
+                Message foundMessage = new Message(
                         rs.getInt("message_id"),
                         rs.getInt("posted_by"),
                         rs.getString("message_text"),
                         rs.getLong("time_posted_epoch"));
-                return message;
+                return foundMessage;
             }
 
         } catch (SQLException e) {
@@ -139,64 +140,12 @@ public class MessageDAO {
     }
 
     /**
-     * Delete a message in message table by its message ID.
-     * 
-     * @param id The ID of the message.
-     * @return True if the message object was deleted from the table.
-     */
-    public boolean deleteMessageById(int id) {
-        try {
-            String sql = "DELETE FROM message WHERE message_id = ?";
-
-            PreparedStatement ps = conn.prepareStatement(sql);
-            ps.setInt(1, id);
-
-            int numberOfUpdatedRows = ps.executeUpdate();
-            if (numberOfUpdatedRows != 0) {
-                return true;
-            }
-
-        } catch (SQLException e) {
-            System.out.println(e.getMessage());
-        }
-
-        return false;
-    }
-
-    /**
-     * Update a message in message table by its message ID.
-     * 
-     * @param id      The ID of the message.
-     * @param message A message object with attributes to be updated.
-     * @return True if the message object was updated in the table.
-     */
-    public boolean updateMessageById(int id, Message message) {
-        try {
-            String sql = "UPDATE message SET message_text = ? WHERE message_id = ?";
-
-            PreparedStatement ps = conn.prepareStatement(sql);
-            ps.setString(1, message.message_text);
-            ps.setInt(2, id);
-
-            int numberOfUpdatedRows = ps.executeUpdate();
-            if (numberOfUpdatedRows != 0) {
-                return true;
-            }
-
-        } catch (SQLException e) {
-            System.out.println(e.getMessage());
-        }
-
-        return false;
-    }
-
-    /**
      * Fetch all messages from message table by an account ID.
      * 
      * @param id The ID of the account.
      * @return All messages from the table as a List collection.
      */
-    public List<Message> getAllMessagesByAccountId(int id) {
+    public List<Message> findAllMessagesByAccountID(int id) {
         List<Message> messages = new ArrayList<Message>();
 
         try {
@@ -221,4 +170,57 @@ public class MessageDAO {
 
         return messages;
     }
+
+    /**
+     * Update a message in message table by its message ID.
+     * 
+     * @param id      The ID of the message.
+     * @param message A message object with attributes to be updated.
+     * @return True if the message object was updated in the table.
+     */
+    public boolean updateMessageByID(int id, Message message) {
+        try {
+            String sql = "UPDATE message SET message_text = ? WHERE message_id = ?";
+
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ps.setString(1, message.message_text);
+            ps.setInt(2, id);
+
+            int numberOfUpdatedRows = ps.executeUpdate();
+            if (numberOfUpdatedRows != 0) {
+                return true;
+            }
+
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+
+        return false;
+    }
+
+    /**
+     * Delete a message in message table by its message ID.
+     * 
+     * @param id The ID of the message.
+     * @return True if the message object was deleted from the table.
+     */
+    public boolean deleteMessageByID(int id) {
+        try {
+            String sql = "DELETE FROM message WHERE message_id = ?";
+
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ps.setInt(1, id);
+
+            int numberOfUpdatedRows = ps.executeUpdate();
+            if (numberOfUpdatedRows != 0) {
+                return true;
+            }
+
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+
+        return false;
+    }
+
 }

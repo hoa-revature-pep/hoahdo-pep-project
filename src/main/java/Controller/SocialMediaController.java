@@ -200,7 +200,7 @@ public class SocialMediaController {
      */
     private void getOneMessageByIDHandler(Context ctx) {
         int messageID = Integer.parseInt(ctx.pathParam("message_id"));
-        Message messageFoundByID = messageService.getMessageById(messageID);
+        Message messageFoundByID = messageService.getMessageByID(messageID);
 
         if (messageFoundByID != null) {
             ctx.json(messageFoundByID);
@@ -217,7 +217,7 @@ public class SocialMediaController {
      */
     private void getAllMessagesByAccountIDHandler(Context ctx) {
         int accountID = Integer.parseInt(ctx.pathParam("account_id"));
-        List<Message> messages = messageService.getAllMessagesByAccountId(accountID);
+        List<Message> messages = messageService.getAllMessagesByAccountID(accountID);
 
         ctx.status(200);
         ctx.json(messages);
@@ -234,7 +234,7 @@ public class SocialMediaController {
     private void updateMessageByIDHandler(Context ctx) throws JsonProcessingException {
         int messageID = Integer.parseInt(ctx.pathParam("message_id"));
         Message messageUpdate = mapper.readValue(ctx.body(), Message.class);
-        Message messageUpdatedByID = messageService.updateMessageById(messageID, messageUpdate);
+        Message messageUpdatedByID = messageService.updateMessageByID(messageID, messageUpdate);
 
         if (messageUpdatedByID != null) {
             ctx.status(200);
@@ -252,7 +252,7 @@ public class SocialMediaController {
      */
     private void deleteMessageByIDHandler(Context ctx) {
         int messageID = Integer.parseInt(ctx.pathParam("message_id"));
-        Message messageDeletedByID = messageService.deleteMessageById(messageID);
+        Message messageDeletedByID = messageService.deleteMessageByID(messageID);
 
         if (messageDeletedByID != null) {
             ctx.json(messageDeletedByID);

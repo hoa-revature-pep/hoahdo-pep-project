@@ -23,11 +23,11 @@ public class MessageService {
      * @return The message object if it was added to the database.
      */
     public Message addMessage(Message message) {
-        boolean messageTextEmpty = message.message_text.isEmpty();
-        boolean messageTextLength = message.message_text.length() < 255;
-        boolean messagePosterExists = messageDAO.getPosterId(message.posted_by) > 0;
+        boolean messageTextNotEmpty = !message.message_text.isEmpty();
+        boolean messageTextLengthCorrect = message.message_text.length() < 255;
+        boolean messagePosterExists = messageDAO.findPosterID(message.posted_by) > 0;
 
-        if (!messageTextEmpty && messageTextLength && messagePosterExists) {
+        if (messageTextNotEmpty && messageTextLengthCorrect && messagePosterExists) {
             return messageDAO.insertMessage(message);
         }
 
@@ -40,7 +40,7 @@ public class MessageService {
      * @return All messages from the database as a List collection.
      */
     public List<Message> getAllMessages() {
-        return messageDAO.getAllMessages();
+        return messageDAO.findAllMessages();
     }
 
     /**
@@ -49,25 +49,18 @@ public class MessageService {
      * @param id The ID of the message.
      * @return The message object if it was found in the database.
      */
-    public Message getMessageById(int id) {
-        return messageDAO.getMessageById(id);
+    public Message getMessageByID(int id) {
+        return messageDAO.findMessageByID(id);
     }
 
     /**
-     * Uses MessageDAO to delete a message by a message ID.
+     * Uses MessageDAO to fetch all messages by an account ID.
      * 
-     * @param id The ID of the message.
-     * @return The message object if it was deleted from the database.
+     * @param id The ID of the account.
+     * @return All messages from the database as a List collection.
      */
-    public Message deleteMessageById(int id) {
-        Message messageExists = messageDAO.getMessageById(id);
-        boolean messageDeleted = messageDAO.deleteMessageById(id);
-
-        if (messageDeleted) {
-            return messageExists;
-        }
-
-        return null;
+    public List<Message> getAllMessagesByAccountID(int id) {
+        return messageDAO.findAllMessagesByAccountID(id);
     }
 
     /**
@@ -77,27 +70,34 @@ public class MessageService {
      * @param message A message object with attributes to be updated.
      * @return The message object if it was updated in the database.
      */
-    public Message updateMessageById(int id, Message message) {
-        boolean messageExists = messageDAO.getMessageById(id) != null;
-        boolean newMessageTextEmpty = message.message_text.isEmpty();
-        boolean newMessageTextLength = message.message_text.length() < 255;
-        boolean messageUpdateSuccessful = messageDAO.updateMessageById(id, message);
+    public Message updateMessageByID(int id, Message message) {
+        boolean messageExists = messageDAO.findMessageByID(id) != null;
+        boolean messageTextNotEmpty = !message.message_text.isEmpty();
+        boolean messageTextLengthCorrect = message.message_text.length() < 255;
+        boolean messageUpdated = messageDAO.updateMessageByID(id, message);
 
-        if (messageExists && !newMessageTextEmpty && newMessageTextLength && messageUpdateSuccessful) {
-            return messageDAO.getMessageById(id);
+        if (messageExists && messageTextNotEmpty && messageTextLengthCorrect && messageUpdated) {
+            return messageDAO.findMessageByID(id);
         }
 
         return null;
     }
 
     /**
-     * Uses MessageDAO to fetch all messages by an account ID.
+     * Uses MessageDAO to delete a message by a message ID.
      * 
-     * @param id The ID of the account.
-     * @return All messages from the database as a List collection.
+     * @param id The ID of the message.
+     * @return The message object if it was deleted from the database.
      */
-    public List<Message> getAllMessagesByAccountId(int id) {
-        return messageDAO.getAllMessagesByAccountId(id);
+    public Message deleteMessageByID(int id) {
+        Message messageToBeDeleted = messageDAO.findMessageByID(id);
+        boolean messageDeleted = messageDAO.deleteMessageByID(id);
+
+        if (messageDeleted) {
+            return messageToBeDeleted;
+        }
+
+        return null;
     }
 
 }
