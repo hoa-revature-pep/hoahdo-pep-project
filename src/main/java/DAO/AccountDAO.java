@@ -22,7 +22,7 @@ public class AccountDAO {
      * @param username The username of an account.
      * @return The username found in the table.
      */
-    public String findUsernameInDatabase(String username) {
+    public String findUsername(String username) {
         try {
             String sql = "SELECT username FROM account WHERE username = ?";
 
@@ -50,7 +50,7 @@ public class AccountDAO {
      * @param password The password of an account.
      * @return The account object found in the table.
      */
-    public Account getAccountByUsernameAndPassword(String username, String password) {
+    public Account findAccountByUserInfo(String username, String password) {
         try {
             String sql = "SELECT * FROM account WHERE username = ? AND password = ?";
 
@@ -60,11 +60,11 @@ public class AccountDAO {
 
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
-                Account account = new Account(
+                Account foundAccount = new Account(
                         rs.getInt("account_id"),
                         rs.getString("username"),
                         rs.getString("password"));
-                return account;
+                return foundAccount;
             }
 
         } catch (SQLException e) {
@@ -89,10 +89,14 @@ public class AccountDAO {
             ps.setString(2, account.password);
 
             ps.executeUpdate();
-            ResultSet accountIdResultSet = ps.getGeneratedKeys();
-            if (accountIdResultSet.next()) {
-                int generatedAccountId = (int) accountIdResultSet.getLong(1);
-                return new Account(generatedAccountId, account.username, account.password);
+            ResultSet rsAccountID = ps.getGeneratedKeys();
+            if (rsAccountID.next()) {
+                int generatedAccountID = (int) rsAccountID.getLong(1);
+                Account insertedAccount = new Account(
+                        generatedAccountID,
+                        account.username,
+                        account.password);
+                return insertedAccount;
             }
 
         } catch (SQLException e) {

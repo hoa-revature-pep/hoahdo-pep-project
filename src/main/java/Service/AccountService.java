@@ -21,11 +21,11 @@ public class AccountService {
      * @return The account object if it was added to the database.
      */
     public Account addAccount(Account account) {
-        boolean usernameEmpty = account.username.isEmpty();
-        boolean passwordLength = account.password.length() >= 4;
-        boolean usernameNotTaken = accountDAO.findUsernameInDatabase(account.username) == null;
+        boolean usernameNotEmpty = !account.username.isEmpty();
+        boolean passwordLengthCorrect = account.password.length() >= 4;
+        boolean usernameNotTaken = accountDAO.findUsername(account.username) == null;
 
-        if (!usernameEmpty && passwordLength && usernameNotTaken) {
+        if (usernameNotEmpty && passwordLengthCorrect && usernameNotTaken) {
             return accountDAO.insertAccount(account);
         }
 
@@ -39,11 +39,11 @@ public class AccountService {
      * @param account An Account object.
      * @return The account object if it was found in the database.
      */
-    public Account getAccount(Account account) {
-        Account fetchedAccount = accountDAO.getAccountByUsernameAndPassword(account.username, account.password);
+    public Account verifyAccount(Account account) {
+        Account verifiedAccount = accountDAO.findAccountByUserInfo(account.username, account.password);
 
-        if (fetchedAccount != null) {
-            return fetchedAccount;
+        if (verifiedAccount != null) {
+            return verifiedAccount;
         }
 
         return null;

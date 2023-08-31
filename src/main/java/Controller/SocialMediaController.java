@@ -145,7 +145,7 @@ public class SocialMediaController {
      */
     private void verifyLoginHandler(Context ctx) throws JsonProcessingException {
         Account userInfo = mapper.readValue(ctx.body(), Account.class);
-        Account verifiedUser = accountService.getAccount(userInfo);
+        Account verifiedUser = accountService.verifyAccount(userInfo);
 
         if (verifiedUser != null) {
             ctx.status(200);
