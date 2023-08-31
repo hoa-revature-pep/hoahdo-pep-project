@@ -27,7 +27,9 @@ public class MessageService {
         boolean messageTextLengthCorrect = message.message_text.length() < 255;
         boolean messagePosterExists = messageDAO.findPosterID(message.posted_by) > 0;
 
-        if (messageTextNotEmpty && messageTextLengthCorrect && messagePosterExists) {
+        if (messageTextNotEmpty && 
+            messageTextLengthCorrect && 
+            messagePosterExists) {
             return messageDAO.insertMessage(message);
         }
 
